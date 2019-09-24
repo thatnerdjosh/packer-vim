@@ -1,0 +1,5 @@
+---
+- name: Converge Dev Workstation
+  hosts: all
+  roles:
+    - role: NerdsvilleCEO.ansible_role_vim

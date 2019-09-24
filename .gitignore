@@ -1,0 +1,7 @@
+ansible/roles/*
+!ansible/roles/requirements.yml
+tags
+keys.json
+*.retry
+*/__pycache__
+*.pyc
