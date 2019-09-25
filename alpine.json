@@ -10,7 +10,12 @@
     "commit": true,
     "changes": [
       "USER {{user `default_user`}}",
-      "WORKDIR /home/{{user `default_user`}}",
+      "ENV UHOME /home/{{user `default_user`}}",
+      "ENV GOROOT /usr/lib/go",
+      "ENV GOBIN $GOROOT/bin",
+      "ENV GOPATH $UHOME/workspace",
+      "ENV PATH $PATH:$GOBIN:$GOPATH/bin",
+      "WORKDIR $UHOME/workspace",
       "CMD vim"
     ],
     "run_command": [ "-d",
@@ -37,6 +42,12 @@
     "extra_arguments": [
       "--extra-vars",
       "ansible_host={{user `ansible_host`}} ansible_connection={{user `ansible_connection`}} default_user={{user `default_user`}} ansible_python_interpreter=/usr/bin/python"
+    ],
+    "only": ["docker"]
+  },{
+    "type": "shell",
+    "inline": [
+      "apk del sudo python python-dev ca-certificates"
     ],
     "only": ["docker"]
   }],

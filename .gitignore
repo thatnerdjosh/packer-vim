@@ -5,3 +5,4 @@ keys.json
 *.retry
 */__pycache__
 *.pyc
+.viminfo
