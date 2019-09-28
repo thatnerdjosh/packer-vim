@@ -1,3 +1,4 @@
+qemu*
 ansible/roles/*
 !ansible/roles/requirements.yml
 tags

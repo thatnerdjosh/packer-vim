@@ -1,0 +1,69 @@
+{
+  "variables": {
+    "ansible_host": "default",
+    "ansible_connection": "docker",
+    "default_user": "developer"
+  },
+  "builders": [{
+    "type": "docker",
+    "image": "arm32v7/alpine:latest",
+    "commit": true,
+    "changes": [
+      "USER {{user `default_user`}}",
+      "ENV UHOME /home/{{user `default_user`}}",
+      "ENV GOROOT /usr/local/go",
+      "ENV GOBIN $GOROOT/bin",
+      "ENV GOPATH $UHOME/workspace",
+      "ENV PATH $PATH:$GOBIN:$GOPATH/bin",
+      "WORKDIR $UHOME/workspace",
+      "CMD vim"
+    ],
+    "run_command": [ "-d",
+      "-i",
+      "-t",
+      "-v","/usr/bin/qemu-arm-static:/usr/bin/qemu-arm-static",
+      "--name",
+      "{{user `ansible_host`}}",
+      "{{.Image}}",
+      "/bin/ash"
+    ]
+  }],
+  "provisioners": [{
+    "type": "shell",
+    "inline": [
+      "apk update",
+      "apk add --no-cache sudo python ca-certificates"
+    ],
+    "only": ["docker"]
+   },{
+    "type": "ansible",
+    "user": "root",
+    "playbook_file": "ansible/playbooks/docker/provision.yaml",
+    "ansible_env_vars": ["ANSIBLE_ROLES_PATH=ansible/roles"],
+    "extra_arguments": [
+      "--extra-vars",
+      "ansible_host={{user `ansible_host`}} ansible_connection={{user `ansible_connection`}} default_user={{user `default_user`}} ansible_python_interpreter=/usr/bin/python"
+    ],
+    "only": ["docker"]
+  },{
+    "type": "shell",
+    "inline": [
+      "apk del sudo python python-dev ca-certificates"
+    ],
+    "only": ["docker"]
+  }],
+  "post-processors": [[ 
+    {
+      "type": "docker-tag",
+      "repository": "docker.io/omnidapps/vim",
+      "tag": "alpine-arm",
+      "only": ["docker"]
+    },
+    {
+      "type": "docker-push",
+      "login": true,
+      "login_username": "{{ user `registry_user` }}",
+      "login_password": "{{ user `registry_password` }}"
+    }
+  ]]
+}
