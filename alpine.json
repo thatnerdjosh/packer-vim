@@ -11,12 +11,8 @@
     "changes": [
       "USER {{user `default_user`}}",
       "ENV UHOME /home/{{user `default_user`}}",
-      "ENV GOROOT /usr/lib/go",
-      "ENV GOBIN $GOROOT/bin",
-      "ENV GOPATH $UHOME/workspace",
-      "ENV PATH $PATH:$GOBIN:$GOPATH/bin",
       "WORKDIR $UHOME/workspace",
-      "CMD vim"
+      "CMD tmux -u2"
     ],
     "run_command": [ "-d",
       "-i",
@@ -54,7 +50,7 @@
   "post-processors": [[ 
     {
       "type": "docker-tag",
-      "repository": "docker.io/omnidapps/vim",
+      "repository": "docker.io/omnidapps/tmux",
       "tag": "alpine",
       "only": ["docker"]
     },
