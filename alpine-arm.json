@@ -9,13 +9,12 @@
     "image": "arm32v7/alpine:latest",
     "commit": true,
     "changes": [
-      "USER {{user `default_user`}}",
       "ENV UHOME /home/{{user `default_user`}}",
       "ENV GOROOT /usr/local/go",
       "ENV GOPATH $UHOME/workspace",
       "ENV PATH $PATH:$GOROOT/bin:$GOPATH/bin",
       "WORKDIR $UHOME/workspace",
-      "CMD tmux -u2"
+      "ENTRYPOINT /usr/local/bin/entrypoint.sh"
     ],
     "run_command": [ "-d",
       "-i",
@@ -31,10 +30,16 @@
     "type": "shell",
     "inline": [
       "apk update",
-      "apk add --no-cache sudo python ca-certificates"
+      "apk add --no-cache shadow sudo su-exec python ca-certificates"
     ],
     "only": ["docker"]
-   },{
+   },
+   {
+    "type": "file",
+    "source": "entrypoint.sh",
+    "destination": "/usr/local/bin/entrypoint.sh"
+   },
+   {
     "type": "ansible",
     "user": "root",
     "playbook_file": "ansible/playbooks/docker/provision.yaml",
@@ -57,12 +62,6 @@
       "repository": "docker.io/omnidapps/tmux",
       "tag": "alpine-arm",
       "only": ["docker"]
-    },
-    {
-      "type": "docker-push",
-      "login": true,
-      "login_username": "{{ user `registry_user` }}",
-      "login_password": "{{ user `registry_password` }}"
     }
   ]]
 }

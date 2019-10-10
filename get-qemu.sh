@@ -2,7 +2,7 @@ ARCHS=(arm s390x amd64 ppc64le)
 QEMUARCHS=(arm s390x x86_64 ppc64le)
 QEMUVER="v2.12.0-1"
 
-get-qemu() {
+get_qemu() {
     if [[ ! $(find . -name "*qemu-*") ]]; then
         echo "Downloading Qemu "
         for target_arch in ${QEMUARCHS[*]}; do
@@ -15,4 +15,4 @@ get-qemu() {
         rm -f x86_64_qemu-*
     fi
 }
-get-qemu
+get_qemu
